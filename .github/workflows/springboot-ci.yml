@@ -1,0 +1,41 @@
+name: Spring Boot CI
+
+# 🔹 Cuándo se ejecuta
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Compilar y probar backend
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Clonar el código
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # 2️⃣ Configurar Java (usa tu versión, por ejemplo 17)
+      - name: Configurar JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3️⃣ Compilar y ejecutar pruebas
+      - name: Compilar y ejecutar pruebas con Maven
+        run: mvn clean verify
+
+      # 4️⃣ (Opcional) Empaquetar el .jar final
+      - name: Empaquetar aplicación
+        run: mvn package -DskipTests
+
+      # 5️⃣ (Opcional) Guardar el artefacto para descarga
+      - name: Subir artefacto .jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: springboot-jar
+          path: target/*.jar
